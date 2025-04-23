@@ -477,6 +477,92 @@ app.post("/modifyBooks", (req, res) => {
     modifyBooks();
 })
 
+app.post("/getuserdata",verifyUser,(req,res)=>{
+    async function getuserdata() {
+        try {
+            let connection = await oracledb.getConnection({
+                user : "C##HBV23R",
+                password : "alma123",
+                connectString : "localhost:1521/FREE"
+            });
+
+            const result = await connection.execute("SELECT * FROM VASARLO WHERE EMAIL = :email",{email:req.email});
+
+            if (result.rows.length !== 1) {
+                return res.json({status: "error", message: "nem talalt felhasznalot"});
+            }
+
+            let m_email = result.rows[0][0];
+            let m_vezeteknev = result.rows[0][1];
+            let m_keresztnev = result.rows[0][2];
+            let m_iranyitoszam = result.rows[0][3];
+            let m_utca = result.rows[0][4];
+            let m_hazszam = result.rows[0][5];
+            let m_telefonszam = result.rows[0][6];
+
+            await connection.close();
+
+            return res.json({status: "success", message: "User data sent",email:m_email,vezeteknev:m_vezeteknev,keresztnev:m_keresztnev,iranyitoszam:m_iranyitoszam,utca:m_utca,hazszam:m_hazszam,telefonszam:m_telefonszam});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    getuserdata();
+})
+
+app.post("/modifyuserdata",(req,res)=>{
+    async function modifyuserdata(){
+        try {
+            let connection = await oracledb.getConnection({
+                user : "C##HBV23R",
+                password : "alma123",
+                connectString : "localhost:1521/FREE"
+            });
+
+            const result = await connection.execute("SELECT * FROM VASARLO WHERE EMAIL = :email",{email:req.body.email});
+            let torzsv = result.rows[0][7];
+            console.log(torzsv);
+
+            if (req.body.vezeteknev.length < 1 || req.body.vezeteknev.length > 30) {
+                return res.json({status: "failed",message: "Vezeteknev is too short or too long."});
+            }
+
+            if (req.body.keresztnev.length < 1 || req.body.keresztnev.length > 20) {
+                return res.json({status: "failed",message: "Keresztnev is too short or too long."});
+            }
+
+            if (req.body.iranyitoszam.toString().length !== 4) {
+                return res.json({status: "failed",message: "Iranyitoszam is wrong."});
+            }
+
+            if (req.body.utca.length < 1 || req.body.utca.length > 30) {
+                return res.json({status: "failed",message: "Utca is too short or too long."});
+            }
+
+            if (req.body.hazszam.toString().length < 1) {
+                return res.json({status: "failed",message: "Hazszam is empty."});
+            }
+
+            if (req.body.telefonszam.toString().length !== 11) {
+                return res.json({status: "failed",message: "Telefonszam is wrong."});
+            }
+
+            await connection.execute("DELETE FROM VASARLO WHERE EMAIL = :email",{email:req.body.email});
+            await connection.execute("INSERT INTO VASARLO VALUES (:email,:vezeteknev,:keresztnev,:iranyitoszam,:utca,:hazszam,:telefonszam,:torzsvasarlo)",{email:req.body.email,vezeteknev:req.body.vezeteknev,keresztnev:req.body.keresztnev,iranyitoszam:parseInt(req.body.iranyitoszam),utca:req.body.utca,hazszam:parseInt(req.body.hazszam),telefonszam:parseInt(req.body.telefonszam),torzsvasarlo:torzsv});
+            await connection.commit();
+            await connection.close();
+
+            return res.json({status: "success",message:"sikeres módosítás"});
+
+        } catch (err) {
+            return err;
+        }
+    }
+
+    modifyuserdata();
+})
+
 app.get("/logout", (req, res) => {
     res.clearCookie("token");
     return res.json({Status:"Success"});
