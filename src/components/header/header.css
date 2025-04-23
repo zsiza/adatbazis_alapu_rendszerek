@@ -1,0 +1,19 @@
+.custom-navbar {
+  background-color: #e6dbcd !important;
+}
+.bottom-nav {
+  background-color: #e6dbcd !important;
+  margin-bottom: 0px !important;
+}
+.navlink {
+  color: #000 !important;
+  font-size: 16px !important;
+}
+.search-btn {
+  background-color: #dab688 !important;
+  border: #dab688 !important;
+}
+.cart-btn {
+  color: #dab688 !important;
+  border-color: #dab688 !important;
+}

@@ -1,0 +1,74 @@
+.swiper-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.swiper {
+  margin: 15px;
+  width: 95%;
+  height: 210px;
+}
+
+.swiper-slide {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 80%;
+}
+
+.card-container {
+  display: flex;
+  width: 85%;
+  justify-self: center;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #e6dbcd;
+  border-radius: 10px;
+}
+.text-box {
+  color: #917f74;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: right;
+  width: 40%;
+  margin-right: 40px;
+}
+img {
+  width: 50%;
+}
+h1 {
+  font-weight: bolder;
+}
+p {
+  margin: 0;
+  width: 70%;
+  margin-left: auto;
+}
+.latest {
+  color: #917f74;
+  font-size: 40px;
+  font-weight: bolder;
+  margin-left: 10px;
+}
+.book-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.book img {
+  width: 220px;
+  margin: 0;
+  padding: 40px;
+}
