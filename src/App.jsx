@@ -3,7 +3,6 @@ import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
 import Home from "./Home.jsx";
 import "./Home.css";
-import "./styles.css";
 import Header from "./components/header/header.jsx";
 import Index from "./components/index/index.jsx";
 
