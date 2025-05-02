@@ -45,6 +45,7 @@
 }
 img {
   width: 50%;
+  cursor: pointer;
 }
 h1 {
   font-weight: bolder;
@@ -68,7 +69,8 @@ p {
   margin-top: 20px;
 }
 .book img {
-  width: 220px;
-  margin: 0;
-  padding: 40px;
+  width: 160px;
+  margin: 40px;
+  padding: 0px;
+  cursor: pointer;
 }

@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route, redirect} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
 import Home from "./Home.jsx";
@@ -16,6 +16,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AdminPage from "./AdminPage.jsx";
+import BookPage from "./BookPage.jsx";
 
 function App() {
     const [auth, setAuth] = React.useState(false);
@@ -92,6 +93,7 @@ function App() {
             <Route path="/signup" element={<Signup />}></Route>
             <Route path="/userdatachange" element={<UserDataChange />}></Route>
             <Route path="/adminpage" element={<AdminPage />}></Route>
+            <Route path="/bookpage" element={<BookPage />}></Route>
         </Routes>
       </BrowserRouter>
     </>
