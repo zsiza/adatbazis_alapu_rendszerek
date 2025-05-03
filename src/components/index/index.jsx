@@ -3,8 +3,67 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "../index/index.css";
 import { Pagination, Autoplay, Navigation } from "swiper/modules";
+import React, {useEffect} from "react";
+import axios from "axios";
 
 function Index() {
+
+  let cim = "images/Book.png";
+
+  const [values, setValues] = React.useState({
+    img1: "../../../images/atitkokgyemantja.png",
+    img2: "",
+    img3: "",
+    img4: "",
+    img5: "",
+    img6: "",
+    img7: "",
+    img8: "",
+    img9: "",
+    img10: "",
+    img11: "",
+    img12: "",
+    img13: "",
+    img14: "",
+    img15: "",
+    img16: ""
+  });
+
+  useEffect(() => {
+    axios.post("http://localhost:8081/getbookimages", values)
+        .then((res) => {
+          if (res.data.status === "success") {
+              values.img1 = res.data.result[0];
+              values.img2 = res.data.result[1];
+              values.img3 = res.data.result[2];
+              values.img4 = res.data.result[3];
+              values.img5 = res.data.result[4];
+              values.img6 = res.data.result[5];
+              values.img7 = res.data.result[6];
+              values.img8 = res.data.result[7];
+              values.img9 = res.data.result[8];
+              values.img10 = res.data.result[9];
+              values.img11 = res.data.result[10];
+              values.img12 = res.data.result[11];
+              values.img13 = res.data.result[13];
+              values.img14 = res.data.result[14];
+              values.img15 = res.data.result[15];
+              values.img16 = res.data.result[16];
+          } else {
+            alert(res.data.message);
+          }
+        })
+    .catch((err) => {
+      console.log(err);
+    })
+  });
+
+  /*
+  if (typeof window !== "undefined") {
+    kepekBetoltese();
+  }
+   */
+
   return (
     <>
       <div className="swiper-container">
@@ -24,31 +83,31 @@ function Index() {
           className="mySwiper"
         >
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img1} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img2} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img3} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img4} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img5} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img6} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img7} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img8} alt="cim" />
           </SwiperSlide>{" "}
           <SwiperSlide>
-            <img className="book" src="images/Book.png" alt="" />
+            <img className="book" src={values.img9} alt="cim" />
           </SwiperSlide>
         </Swiper>
       </div>
@@ -67,52 +126,52 @@ function Index() {
       <h1 className="latest">Latest</h1>
       <div className="book-container">
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img1} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img2} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img3} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img4} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img5} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img6} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img7} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img8} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img9} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img10} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img11} alt="cim" />
         </div>
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img12} alt="cim" />
         </div>{" "}
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img13} alt="cim" />
         </div>{" "}
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img14} alt="cim" />
         </div>{" "}
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img15} alt="cim" />
         </div>{" "}
         <div className="book">
-          <img src="images/Book.png" alt="" />
+          <img src={values.img16} alt="cim" />
         </div>
       </div>
     </>

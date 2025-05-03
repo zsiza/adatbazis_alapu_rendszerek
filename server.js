@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 const salt = 10;
 let userEmail = "";
+let bookisbn = "";
 
 const app = express();
 app.use(cors({
@@ -25,6 +26,22 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24
     }
 }))
+
+//connection pool
+async function run() {
+    try {
+        await oracledb.createPool({
+            user : "C##HBV23R",
+            password : "alma123",
+            connectString : "localhost:1521/FREE"
+        });
+
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+run();
 
 const verifyUser = (req, res, next) => {
     const token = req.cookies.token;
@@ -46,11 +63,7 @@ const verifyUser = (req, res, next) => {
 app.get("/", verifyUser ,(req, res) => {
     async function adminCheck() {
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             const result = await connection.execute("SELECT * FROM ADMIN WHERE EMAIL = :email",{email:req.email});
             await connection.close();
@@ -72,11 +85,7 @@ app.get("/", verifyUser ,(req, res) => {
 app.post("/signup", (req, res) => {
     async function signup(){
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.email.length < 1 || req.body.email.length > 100) {
                 return res.json({status: "failed",message: "Email is too short or too long."});
@@ -145,11 +154,7 @@ app.post("/signup", (req, res) => {
 app.post("/login", (req, res) => {
     async function login(){
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.email.length < 1 || req.body.email.length > 100) {
                 return res.json({status: "failed",message: "Email is too short or too long."});
@@ -198,11 +203,7 @@ app.post("/login", (req, res) => {
 app.post("/addBooks", (req, res) => {
     async function addBooks(){
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.isbn.length !== 13) {
                 return res.json({status: "failed",message: "ISBN is empty or too long."});
@@ -221,7 +222,7 @@ app.post("/addBooks", (req, res) => {
                 return res.json({status: "failed", message: "Kiado is empty or too long."});
             }
 
-            if (req.body.kiadasEve < 0 || req.body.kiadasEve > 2025) {
+            if (req.body.kiadasEve < 1 || req.body.kiadasEve > 2025) {
                 return res.json({status: "failed", message: "Kiadas is wrong."});
             }
 
@@ -257,7 +258,17 @@ app.post("/addBooks", (req, res) => {
                 return res.json({status: "failed", message: "Hossz is too long."});
             }
 
-            await connection.execute("INSERT INTO KIADVANY VALUES (:isbn,:cim,:kiado,:kiadasEve,:nyelv,:ar,:ismerteto,:elerhetoDb,:adminEmail)",{isbn:req.body.isbn,cim:req.body.cim,kiado:req.body.kiado,kiadasEve:req.body.kiadasEve,nyelv:req.body.nyelv,ar:req.body.ar,ismerteto:req.body.ismerteto,elerhetoDb:req.body.elerhetoDb,adminEmail:userEmail});
+            function normalizeText(input) {
+                return input
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "");
+            }
+
+            const kepurl = "../../../images/" + normalizeText(req.body.cim)  + ".png";
+
+            await connection.execute("INSERT INTO KIADVANY VALUES (:isbn,:cim,:kiado,:kiadasEve,:nyelv,:ar,:ismerteto,:elerhetoDb,:adminEmail,:kep)",{isbn:req.body.isbn,cim:req.body.cim,kiado:req.body.kiado,kiadasEve:req.body.kiadasEve,nyelv:req.body.nyelv,ar:req.body.ar,ismerteto:req.body.ismerteto,elerhetoDb:req.body.elerhetoDb,adminEmail:userEmail,kep:kepurl});
 
             if (req.body.formatum.length > 0) {
                 await connection.execute("INSERT INTO E_KONYV VALUES (:isbn,:formatum)",{isbn:req.body.isbn,formatum:req.body.formatum});
@@ -282,7 +293,7 @@ app.post("/addBooks", (req, res) => {
 
             return res.json({status: "success", message:"Successfully added"});
         } catch (err) {
-            return err;
+            console.log(err);
         }
     }
 
@@ -292,11 +303,7 @@ app.post("/addBooks", (req, res) => {
 app.post("/deleteBooks", (req, res) => {
     async function deleteBook() {
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.delisbn.length !== 13) {
                 return res.json({status: "failed",message: "ISBN is empty or too long."});
@@ -324,11 +331,7 @@ app.post("/deleteBooks", (req, res) => {
 app.post("/searchBooks", (req, res) => {
     async function searchBooks() {
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.searchisbn.length !== 13) {
                 return res.json({status: "failed",message: "ISBN is empty or too long."});
@@ -390,11 +393,7 @@ app.post("/searchBooks", (req, res) => {
 app.post("/modifyBooks", (req, res) => {
     async function modifyBooks(){
         try {
-            let connection = await oracledb.getConnection({
-                user : "C##HBV23R",
-                password : "alma123",
-                connectString : "localhost:1521/FREE"
-            });
+            let connection = await oracledb.getConnection();
 
             if (req.body.cim.length < 1 || req.body.cim.length > 50) {
                 return res.json({status: "failed", message: "Cim is empty or too long."});
@@ -475,6 +474,173 @@ app.post("/modifyBooks", (req, res) => {
     }
 
     modifyBooks();
+})
+
+app.post("/getuserdata",verifyUser,(req,res)=>{
+    async function getuserdata() {
+        try {
+            let connection = await oracledb.getConnection();
+
+            const result = await connection.execute("SELECT * FROM VASARLO WHERE EMAIL = :email",{email:req.email});
+
+            if (result.rows.length !== 1) {
+                return res.json({status: "error", message: "nem talalt felhasznalot"});
+            }
+
+            let m_email = result.rows[0][0];
+            let m_vezeteknev = result.rows[0][1];
+            let m_keresztnev = result.rows[0][2];
+            let m_iranyitoszam = result.rows[0][3];
+            let m_utca = result.rows[0][4];
+            let m_hazszam = result.rows[0][5];
+            let m_telefonszam = result.rows[0][6];
+
+            await connection.close();
+
+            return res.json({status: "success", message: "User data sent",email:m_email,vezeteknev:m_vezeteknev,keresztnev:m_keresztnev,iranyitoszam:m_iranyitoszam,utca:m_utca,hazszam:m_hazszam,telefonszam:m_telefonszam});
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    getuserdata();
+})
+
+app.post("/modifyuserdata",(req,res)=>{
+    async function modifyuserdata(){
+        try {
+            let connection = await oracledb.getConnection();
+
+            const result = await connection.execute("SELECT * FROM VASARLO WHERE EMAIL = :email",{email:req.body.email});
+            let torzsv = result.rows[0][7];
+            console.log(torzsv);
+
+            if (req.body.vezeteknev.length < 1 || req.body.vezeteknev.length > 30) {
+                return res.json({status: "failed",message: "Vezeteknev is too short or too long."});
+            }
+
+            if (req.body.keresztnev.length < 1 || req.body.keresztnev.length > 20) {
+                return res.json({status: "failed",message: "Keresztnev is too short or too long."});
+            }
+
+            if (req.body.iranyitoszam.toString().length !== 4) {
+                return res.json({status: "failed",message: "Iranyitoszam is wrong."});
+            }
+
+            if (req.body.utca.length < 1 || req.body.utca.length > 30) {
+                return res.json({status: "failed",message: "Utca is too short or too long."});
+            }
+
+            if (req.body.hazszam.toString().length < 1) {
+                return res.json({status: "failed",message: "Hazszam is empty."});
+            }
+
+            if (req.body.telefonszam.toString().length !== 11) {
+                return res.json({status: "failed",message: "Telefonszam is wrong."});
+            }
+
+            await connection.execute("DELETE FROM VASARLO WHERE EMAIL = :email",{email:req.body.email});
+            await connection.execute("INSERT INTO VASARLO VALUES (:email,:vezeteknev,:keresztnev,:iranyitoszam,:utca,:hazszam,:telefonszam,:torzsvasarlo)",{email:req.body.email,vezeteknev:req.body.vezeteknev,keresztnev:req.body.keresztnev,iranyitoszam:parseInt(req.body.iranyitoszam),utca:req.body.utca,hazszam:parseInt(req.body.hazszam),telefonszam:parseInt(req.body.telefonszam),torzsvasarlo:torzsv});
+            await connection.commit();
+            await connection.close();
+
+            return res.json({status: "success",message:"sikeres módosítás"});
+
+        } catch (err) {
+            return err;
+        }
+    }
+
+    modifyuserdata();
+})
+
+app.post("/getbookimages",(req,res)=>{
+    async function getbookimages(){
+        try {
+            let connection = await oracledb.getConnection();
+
+            const result = await connection.execute("SELECT ISBN, KEP FROM KIADVANY");
+
+            await connection.close();
+
+            return res.json({status: "success",result: result.rows});
+        } catch (err) {
+            return err;
+        }
+    }
+
+    getbookimages();
+})
+
+app.post("/getbookpage",(req,res)=>{
+    async function getbookpage(){
+        try {
+            bookisbn = req.body.isbn[0];
+            return res.json({status: "success",message: bookisbn});
+        } catch (err) {
+            return err;
+        }
+    }
+
+    getbookpage();
+})
+
+app.post("/showbookpage",(req,res)=>{
+    async function showbookpage(){
+        try {
+
+            if (bookisbn === "") {
+                return res.json({status: "failed",message: "Bad Request"});
+            }
+            let connection = await oracledb.getConnection();
+
+            const result = await connection.execute("SELECT * FROM KIADVANY WHERE ISBN = :isbn",{isbn:bookisbn});
+
+            let m_szerzok = "";
+            const resultSzerzok = await connection.execute("SELECT * FROM SZERZO WHERE ISBN = :isbn",{isbn:bookisbn});
+            for (let i=0; i<resultSzerzok.rows.length-1; i++) {
+                m_szerzok += resultSzerzok.rows[i][1];
+                m_szerzok += ", ";
+            }
+            m_szerzok += resultSzerzok.rows[resultSzerzok.rows.length-1][1];
+
+            let m_mufajok = "";
+            const resultMufajok = await connection.execute("SELECT * FROM MUFAJ WHERE ISBN = :isbn",{isbn:bookisbn});
+            for (let i=0; i<resultMufajok.rows.length-1; i++) {
+                m_mufajok += resultMufajok.rows[i][1];
+                m_mufajok += ", ";
+            }
+            m_mufajok += resultMufajok.rows[resultMufajok.rows.length-1][1];
+
+            let m_formatum = "";
+            let m_hossz = 0;
+
+            const resultFormatum = await connection.execute("SELECT * FROM E_KONYV WHERE ISBN = :isbn",{isbn:bookisbn});
+            if (resultFormatum.rows.length === 1) {
+                m_formatum = resultFormatum.rows[0][1];
+            }
+
+            const resultHossz = await connection.execute("SELECT * FROM HANGOSKONYV WHERE ISBN = :isbn",{isbn:bookisbn});
+            if (resultHossz.rows.length === 1) {
+                m_hossz = resultHossz.rows[0][1];
+            }
+
+            let eredmeny = result.rows[0];
+            eredmeny[10] = m_szerzok;
+            eredmeny[11] = m_mufajok;
+            eredmeny[12] = m_formatum;
+            eredmeny[13] = m_hossz;
+
+            await connection.close();
+
+            return res.json({status: "success", message: "Book found",result: eredmeny});
+
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    showbookpage();
 })
 
 app.get("/logout", (req, res) => {

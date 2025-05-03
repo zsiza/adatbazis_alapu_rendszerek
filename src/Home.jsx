@@ -1,256 +1,159 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import axios from "axios";
 import {Link, useNavigate} from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "./index.css";
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
 
-function AdminPage() {
-    const [values, setValues] = useState({
-        isbn: "",
-        cim: "",
-        szerzok: "",
-        mufajok: "",
-        kiado: "",
-        kiadasEve: 0,
-        nyelv: "",
-        ar: 0,
-        ismerteto: "",
-        elerhetoDb: 0,
-        formatum: "",
-        hossz: 0
-    });
-    const [delisbn, setDelisbn] = useState("");
-    const [searchisbn, setSearchisbn] = useState("");
-    const [modifiedValues, setModifiedValues] = useState({
-        isbn: "",
-        cim: "",
-        szerzok: "",
-        mufajok: "",
-        kiado: "",
-        kiadasEve: 0,
-        nyelv: "",
-        ar: 0,
-        ismerteto: "",
-        elerhetoDb: 0,
-        formatum: "",
-        hossz: 0
-    })
-    const [modify, setModify] = useState(true);
+function Index() {
+    const [values, setValues] = React.useState(Array(16).fill([]));
 
-    const handleInput = (event) => {
-        setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
-    }
+    useEffect(() => {
+        axios.post("http://localhost:8081/getbookimages", values)
+            .then((res) => {
+                if (res.data.status === "success") {
+                    const filledValues = Array(16).fill([]).map((_, ind) => res.data.result[ind] || []);
+                    setValues(filledValues);
+                } else {
+                    alert(res.data.message);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    },[])
 
-    const handleInputForModify = (event) => {
-        setModifiedValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
-    }
+    const navigate = useNavigate();
+    axios.defaults.withCredentials = true;
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        axios.post('http://localhost:8081/addBooks', values)
-        .then(res => {
+    const getBookPage = (isbn) => {
+        axios.post("http://localhost:8081/getbookpage", {isbn: isbn})
+        .then((res) => {
             if (res.data.status === "success") {
-                location.reload(true);
-                alert(res.data.message);
+                navigate("/bookpage");
             } else {
-                alert(res.data.message);
+                alert("failed");
             }
         })
-        .catch(err => console.log(err));
-    }
-
-    const handleSubmitForDelete = async () => {
-        axios.post('http://localhost:8081/deleteBooks', {delisbn:delisbn})
-        .then(res => {
-            if (res.data.status === "success") {
-                location.reload(true);
-                alert(res.data.message);
-            } else {
-                alert(res.data.message);
-            }
+        .catch((err) => {
+            console.log(err);
         })
-        .catch(err => console.log(err));
-    }
-
-    const handleSearch = async () => {
-        axios.post('http://localhost:8081/searchBooks', {searchisbn:searchisbn})
-        .then(res => {
-            if (res.data.status === "success") {
-                modifiedValues.isbn = res.data.isbn;
-                modifiedValues.cim = res.data.cim;
-                modifiedValues.szerzok = res.data.szerzok;
-                modifiedValues.mufajok = res.data.mufajok;
-                modifiedValues.kiado = res.data.kiado;
-                modifiedValues.kiadasEve = res.data.kiadasEve;
-                modifiedValues.nyelv = res.data.nyelv;
-                modifiedValues.ar = res.data.ar;
-                modifiedValues.ismerteto = res.data.ismerteto;
-                modifiedValues.elerhetoDb=res.data.elerhetoDb;
-                modifiedValues.formatum = res.data.formatum;
-                modifiedValues.hossz = res.data.hossz;
-                setModify(false);
-                alert(res.data.message);
-            } else {
-                alert(res.data.message);
-            }
-        })
-        .catch(err => console.log(err));
-    }
-
-    const handleModify = async () => {
-        axios.post('http://localhost:8081/modifyBooks', modifiedValues)
-        .then(res => {
-            if (res.data.status === "success") {
-                alert(res.data.message);
-                setModify(true);
-            } else {
-                alert(res.data.message);
-            }
-        })
-        .catch(err => console.log(err));
     }
 
     return (
-        <div id="adminform" className="loginsignupform">
-            <div className="formcontainer">
-                <form onSubmit={handleSubmit}>
-                    <h2>Kiadvány felvétele</h2>
-                    <div className="inputcontainer">
-                        <div>
-                            <label htmlFor="isbn"><strong>ISBN</strong></label>
-                            <input type="text" name="isbn" placeholder="ISBN" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="cim"><strong>Cím</strong></label>
-                            <input type="text" name="cim" placeholder="Cím" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="szerzok"><strong>Szerzők (a, b, c...)</strong></label>
-                            <input type="text" name="szerzok" placeholder="Szerzők" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="mufajok"><strong>Műfajok (a, b, c...)</strong></label>
-                            <input type="text" name="mufajok" placeholder="Műfajok" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="kiado"><strong>Kiadó</strong></label>
-                            <input type="text" name="kiado" placeholder="Kiadó" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="kiadasEve"><strong>Kiadás éve</strong></label>
-                            <input type="number" name="kiadasEve" placeholder="Kiadás éve" onChange={handleInput} />
-                        </div>
-                    </div>
-                    <div className="inputcontainer">
-                        <div>
-                            <label htmlFor="nyelv"><strong>Nyelv</strong></label>
-                            <input type="text" name="nyelv" placeholder="Nyelv" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="ar"><strong>Ár</strong></label>
-                            <input type="number" name="ar" placeholder="Ár" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="ismerteto"><strong>Rövid ismertető</strong></label>
-                            <input type="text" name="ismerteto" placeholder="Rövid ismertető" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="elerhetoDb"><strong>Elérhető darab</strong></label>
-                            <input type="number" name="elerhetoDb" placeholder="Elérhető darab" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="formatum"><strong>Formátum (csak e-könyveknél)</strong></label>
-                            <input type="text" name="formatum" placeholder="Formátum" onChange={handleInput} />
-                        </div>
-                        <div>
-                            <label htmlFor="hossz"><strong>Hossz (percben, csak hangoskönyveknél)</strong></label>
-                            <input type="number" name="hossz" placeholder="Hossz" onChange={handleInput}/>
-                        </div>
-                    </div>
-                    <button type="submit">Felvétel</button>
-                </form>
+        <>
+            <div className="swiper-container">
+                <Swiper
+                    loop={true}
+                    autoplay={{
+                        delay: 2500,
+                        disableOnInteraction: false,
+                    }}
+                    slidesPerView={7}
+                    spaceBetween={30}
+                    pagination={{
+                        clickable: true,
+                    }}
+                    navigation={true}
+                    modules={[Autoplay, Pagination, Navigation]}
+                    className="mySwiper"
+                >
+                    <SwiperSlide>
+                        <img className="book" src={values[0]} alt={values[0]} onClick={() => getBookPage(values[0])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[1]} alt={values[1]} onClick={() => getBookPage(values[1])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[2]} alt={values[2]} onClick={() => getBookPage(values[2])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[3]} alt={values[3]} onClick={() => getBookPage(values[3])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[4]} alt={values[4]} onClick={() => getBookPage(values[4])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[5]} alt={values[5]} onClick={() => getBookPage(values[5])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[6]} alt={values[6]} onClick={() => getBookPage(values[6])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[7]} alt={values[7]} onClick={() => getBookPage(values[7])} />
+                    </SwiperSlide>{" "}
+                    <SwiperSlide>
+                        <img className="book" src={values[8]} alt={values[8]} onClick={() => getBookPage(values[8])} />
+                    </SwiperSlide>
+                </Swiper>
             </div>
-            <hr/>
-            <div className="formcontainer">
-                {modify ?
-                    <form action={handleSearch}>
-                        <h2>Módosítás egy kiadványon</h2>
-                        <div className="shortinput">
-                            <label htmlFor="searchisbn"><strong>ISBN</strong></label>
-                            <input type="text" name="searchisbn" placeholder="ISBN" onChange={event => setSearchisbn(event.target.value)} />
-                        </div>
-                        <button type="submit">Keres</button>
-                    </form>
-                    :
-                    <form action={handleModify}>
-                        <h2>Módosítás egy kiadványon</h2>
-                        <div className="inputcontainer">
-                            <div>
-                                <label htmlFor="isbn"><strong>ISBN</strong></label>
-                                <input type="text" name="isbn" readOnly={true} onChange={handleInputForModify} defaultValue={modifiedValues.isbn} />
-                            </div>
-                            <div>
-                                <label htmlFor="cim"><strong>Cím</strong></label>
-                                <input type="text" name="cim" onChange={handleInputForModify} defaultValue={modifiedValues.cim}/>
-                            </div>
-                            <div>
-                                <label htmlFor="szerzok"><strong>Szerzők (a, b, c...)</strong></label>
-                                <input type="text" name="szerzok" onChange={handleInputForModify} defaultValue={modifiedValues.szerzok}/>
-                            </div>
-                            <div>
-                                <label htmlFor="mufajok"><strong>Műfajok (a, b, c...)</strong></label>
-                                <input type="text" name="mufajok" onChange={handleInputForModify} defaultValue={modifiedValues.mufajok}/>
-                            </div>
-                            <div>
-                                <label htmlFor="kiado"><strong>Kiadó</strong></label>
-                                <input type="text" name="kiado" onChange={handleInputForModify} defaultValue={modifiedValues.kiado}/>
-                            </div>
-                            <div>
-                                <label htmlFor="kiadasEve"><strong>Kiadás éve</strong></label>
-                                <input type="number" name="kiadasEve" onChange={handleInputForModify} defaultValue={modifiedValues.kiadasEve}/>
-                            </div>
-                        </div>
-                        <div className="inputcontainer">
-                            <div>
-                                <label htmlFor="nyelv"><strong>Nyelv</strong></label>
-                                <input type="text" name="nyelv" onChange={handleInputForModify} defaultValue={modifiedValues.nyelv}/>
-                            </div>
-                            <div>
-                                <label htmlFor="ar"><strong>Ár</strong></label>
-                                <input type="number" name="ar" onChange={handleInputForModify} defaultValue={modifiedValues.ar} />
-                            </div>
-                            <div>
-                                <label htmlFor="ismerteto"><strong>Rövid ismertető</strong></label>
-                                <input type="text" name="ismerteto" onChange={handleInputForModify} defaultValue={modifiedValues.ismerteto}/>
-                            </div>
-                            <div>
-                                <label htmlFor="elerhetoDb"><strong>Elérhető darab</strong></label>
-                                <input type="number" name="elerhetoDb" onChange={handleInputForModify} defaultValue={modifiedValues.elerhetoDb}/>
-                            </div>
-                            <div>
-                                <label htmlFor="formatum"><strong>Formátum (csak e-könyveknél)</strong></label>
-                                <input type="text" name="formatum" onChange={handleInputForModify} defaultValue={modifiedValues.formatum}/>
-                            </div>
-                            <div>
-                                <label htmlFor="hossz"><strong>Hossz (percben, csak hangoskönyveknél)</strong></label>
-                                <input type="number" name="hossz" onChange={handleInputForModify} defaultValue={modifiedValues.hossz}/>
-                            </div>
-                        </div>
-                        <button type="submit">Módosít</button>
-                    </form>
-                }
+
+            <div className="card-container">
+                <img src="images/alice.png" />
+                <div className="text-box">
+                    <h1>2023 year 50 most popular bestseller</h1>
+                    <p>
+                        Explore the literary highlights of 2023 with our '50 Most Popular
+                        Bestsellers' badge—a curated collection of the year's must-reads.
+                    </p>
+                </div>
             </div>
-            <hr/>
-            <div className="formcontainer">
-                <form action={handleSubmitForDelete}>
-                    <h2>Kiadvány törlése</h2>
-                    <div className="shortinput">
-                        <label htmlFor="isbn"><strong>ISBN</strong></label>
-                        <input type="text" name="isbn" placeholder="ISBN" onChange={e => setDelisbn(e.target.value)} />
-                    </div>
-                    <button type="submit">Delete</button>
-                </form>
+
+            <h1 className="latest">Latest</h1>
+            <div className="book-container">
+                <div className="book">
+                    <img src={values[0]} alt={values[0]} onClick={() => getBookPage(values[0])} />
+                </div>
+                <div className="book">
+                    <img src={values[1]} alt={values[1]} onClick={() => getBookPage(values[1])} />
+                </div>
+                <div className="book">
+                    <img src={values[2]} alt={values[2]} onClick={() => getBookPage(values[2])} />
+                </div>
+                <div className="book">
+                    <img src={values[3]} alt={values[3]} onClick={() => getBookPage(values[3])} />
+                </div>
+                <div className="book">
+                    <img src={values[4]} alt={values[4]} onClick={() => getBookPage(values[4])}/>
+                </div>
+                <div className="book">
+                    <img src={values[5]} alt={values[5]} onClick={() => getBookPage(values[5])} />
+                </div>
+                <div className="book">
+                    <img src={values[6]} alt={values[6]} onClick={() => getBookPage(values[6])} />
+                </div>
+                <div className="book">
+                    <img src={values[7]} alt={values[7]} onClick={() => getBookPage(values[7])} />
+                </div>
+                <div className="book">
+                    <img src={values[8]} alt={values[8]} onClick={() => getBookPage(values[8])} />
+                </div>
+                <div className="book">
+                    <img src={values[9]} alt={values[9]} onClick={() => getBookPage(values[9])} />
+                </div>
+                <div className="book">
+                    <img src={values[10]} alt={values[10]} onClick={() => getBookPage(values[10])} />
+                </div>
+                <div className="book">
+                    <img src={values[11]} alt={values[11]} onClick={() => getBookPage(values[11])} />
+                </div>{" "}
+                <div className="book">
+                    <img src={values[12]} alt={values[12]} onClick={() => getBookPage(values[12])} />
+                </div>{" "}
+                <div className="book">
+                    <img src={values[13]} alt={values[13]} onClick={() => getBookPage(values[13])} />
+                </div>{" "}
+                <div className="book">
+                    <img src={values[14]} alt={values[14]} onClick={() => getBookPage(values[14])} />
+                </div>{" "}
+                <div className="book">
+                    <img src={values[15]} alt={values[15]} onClick={() => getBookPage(values[15])} />
+                </div>
             </div>
-        </div>
-    )
+        </>
+    );
 }
 
 function Home() {
@@ -280,17 +183,6 @@ function Home() {
         })
     }, [navigate])
 
-    const handleDelete = () => {
-        axios.get("http://localhost:8081/logout")
-        .then((res) => {
-            if (res.data.Status === "Success") {
-                location.reload(true);
-            }
-        }).catch((err) => {
-            console.log(err);
-        })
-    }
-
     return (
         <div>
             {
@@ -298,19 +190,17 @@ function Home() {
                 <div>
                     {
                     admin ?
-                        <AdminPage />
+                        <>
+                            <Index />
+                        </>
                     :
-                    <h3 className="vasarlotext">You are authorized, {email}</h3>
+                        <>
+                            <Index />
+                        </>
                     }
-                    <button className="logoutbutton" onClick={handleDelete}>Logout</button>
                 </div>
                 :
-                <div id="notAuthenticated">
-                    <h3>{message}</h3>
-                    <h3>Login now</h3>
-                    <Link to="/login" className="link">Login</Link>
-                    <Link to="/signup" className="link">Signup</Link>
-                </div>
+                <Index />
             }
         </div>
     )

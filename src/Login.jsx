@@ -34,6 +34,7 @@ function Login() {
             .then(res => {
                 if (res.data.status === "success") {
                     navigate("/");
+                    location.reload(true);
                 } else {
                     alert("Login failed");
                 }
