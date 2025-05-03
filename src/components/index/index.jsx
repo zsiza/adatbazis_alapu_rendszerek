@@ -1,61 +1,60 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import "swiper/css/pagination";
 import "../index/index.css";
 import { Pagination, Autoplay, Navigation } from "swiper/modules";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 
 function Index() {
-
   let cim = "images/Book.png";
 
   const [values, setValues] = React.useState({
-    img1: "../../../images/atitkokgyemantja.png",
-    img2: "",
-    img3: "",
-    img4: "",
-    img5: "",
-    img6: "",
-    img7: "",
-    img8: "",
-    img9: "",
-    img10: "",
-    img11: "",
-    img12: "",
-    img13: "",
-    img14: "",
-    img15: "",
-    img16: ""
+    img1: "images/atitkokgyemantja.png",
+    img2: "images/atitkokgyemantja.png",
+    img3: "images/atitkokgyemantja.png",
+    img4: "images/atitkokgyemantja.png",
+    img5: "images/atitkokgyemantja.png",
+    img6: "images/atitkokgyemantja.png",
+    img7: "images/atitkokgyemantja.png",
+    img8: "images/atitkokgyemantja.png",
+    img9: "images/atitkokgyemantja.png",
+    img10: "images/atitkokgyemantja.png",
+    img11: "images/atitkokgyemantja.png",
+    img12: "images/atitkokgyemantja.png",
+    img13: "images/atitkokgyemantja.png",
+    img14: "images/atitkokgyemantja.png",
+    img15: "images/atitkokgyemantja.png",
+    img16: "images/atitkokgyemantja.png",
   });
 
   useEffect(() => {
-    axios.post("http://localhost:8081/getbookimages", values)
-        .then((res) => {
-          if (res.data.status === "success") {
-              values.img1 = res.data.result[0];
-              values.img2 = res.data.result[1];
-              values.img3 = res.data.result[2];
-              values.img4 = res.data.result[3];
-              values.img5 = res.data.result[4];
-              values.img6 = res.data.result[5];
-              values.img7 = res.data.result[6];
-              values.img8 = res.data.result[7];
-              values.img9 = res.data.result[8];
-              values.img10 = res.data.result[9];
-              values.img11 = res.data.result[10];
-              values.img12 = res.data.result[11];
-              values.img13 = res.data.result[13];
-              values.img14 = res.data.result[14];
-              values.img15 = res.data.result[15];
-              values.img16 = res.data.result[16];
-          } else {
-            alert(res.data.message);
-          }
-        })
-    .catch((err) => {
-      console.log(err);
-    })
+    axios
+      .post("http://localhost:8081/getbookimages", values)
+      .then((res) => {
+        if (res.data.status === "success") {
+          values.img1 = res.data.result[0];
+          values.img2 = res.data.result[1];
+          values.img3 = res.data.result[2];
+          values.img4 = res.data.result[3];
+          values.img5 = res.data.result[4];
+          values.img6 = res.data.result[5];
+          values.img7 = res.data.result[6];
+          values.img8 = res.data.result[7];
+          values.img9 = res.data.result[8];
+          values.img10 = res.data.result[9];
+          values.img11 = res.data.result[10];
+          values.img12 = res.data.result[11];
+          values.img13 = res.data.result[13];
+          values.img14 = res.data.result[14];
+          values.img15 = res.data.result[15];
+          values.img16 = res.data.result[16];
+        } else {
+          alert(res.data.message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
 
   /*
