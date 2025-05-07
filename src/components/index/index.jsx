@@ -2,52 +2,25 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "../index/index.css";
 import { Pagination, Autoplay, Navigation } from "swiper/modules";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import axios from "axios";
 
-function Index() {
-  let cim = "images/Book.png";
-
-  const [values, setValues] = React.useState({
-    img1: "images/atitkokgyemantja.png",
-    img2: "images/atitkokgyemantja.png",
-    img3: "images/atitkokgyemantja.png",
-    img4: "images/atitkokgyemantja.png",
-    img5: "images/atitkokgyemantja.png",
-    img6: "images/atitkokgyemantja.png",
-    img7: "images/atitkokgyemantja.png",
-    img8: "images/atitkokgyemantja.png",
-    img9: "images/atitkokgyemantja.png",
-    img10: "images/atitkokgyemantja.png",
-    img11: "images/atitkokgyemantja.png",
-    img12: "images/atitkokgyemantja.png",
-    img13: "images/atitkokgyemantja.png",
-    img14: "images/atitkokgyemantja.png",
-    img15: "images/atitkokgyemantja.png",
-    img16: "images/atitkokgyemantja.png",
-  });
+function Index({ categoryFilter, searchQuery, setSearchQuery }) {
+  const [bookImages, setBookImages] = useState(
+    Array(16).fill("images/atitkokgyemantja.png")
+  );
 
   useEffect(() => {
     axios
-      .post("http://localhost:8081/getbookimages", values)
+      .post("http://localhost:8081/getbookimages", {})
       .then((res) => {
-        if (res.data.status === "success") {
-          values.img1 = res.data.result[0];
-          values.img2 = res.data.result[1];
-          values.img3 = res.data.result[2];
-          values.img4 = res.data.result[3];
-          values.img5 = res.data.result[4];
-          values.img6 = res.data.result[5];
-          values.img7 = res.data.result[6];
-          values.img8 = res.data.result[7];
-          values.img9 = res.data.result[8];
-          values.img10 = res.data.result[9];
-          values.img11 = res.data.result[10];
-          values.img12 = res.data.result[11];
-          values.img13 = res.data.result[13];
-          values.img14 = res.data.result[14];
-          values.img15 = res.data.result[15];
-          values.img16 = res.data.result[16];
+        if (res.data.status === "success" && res.data.result) {
+          const updatedImages = [...bookImages];
+          res.data.result.slice(0, 16).forEach((img, index) => {
+            updatedImages[index] = img;
+          });
+          setBookImages(updatedImages);
         } else {
           alert(res.data.message);
         }
@@ -55,64 +28,73 @@ function Index() {
       .catch((err) => {
         console.log(err);
       });
+  }, []);
+
+  const filteredBooks = bookImages.filter((src) => {
+    const lowerSrc = src.toLowerCase();
+    const lowerQuery = searchQuery.toLowerCase();
+
+    if (categoryFilter === "E-books") {
+      return lowerSrc.includes("ebook") && lowerSrc.includes(lowerQuery);
+    }
+
+    if (categoryFilter === "Audiobooks") {
+      return lowerSrc.includes("audiobook") && lowerSrc.includes(lowerQuery);
+    }
+
+    return lowerSrc.includes(lowerQuery); // fallback: all types
   });
 
-  /*
-  if (typeof window !== "undefined") {
-    kepekBetoltese();
-  }
-   */
+  const renderBook = (src, index) => (
+    <div className="book" key={index}>
+      <img className="book-base" src="images/Book.png" alt="book base" />
+      <img className="book-cover" src={src} alt="cover" />
+    </div>
+  );
 
   return (
     <>
+      <Container className="mt-3">
+        <Row className="justify-content-center">
+          <Col md={10}>
+            <Form className="d-flex">
+              <Form.Control
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Find a book"
+                className="search-input me-2"
+              />
+              <Button type="submit" className="search-btn">
+                Search
+              </Button>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
+
       <div className="swiper-container">
         <Swiper
-          loop={true}
+          loop
           autoplay={{
             delay: 2500,
             disableOnInteraction: false,
           }}
           slidesPerView={7}
           spaceBetween={30}
-          pagination={{
-            clickable: true,
-          }}
-          navigation={true}
+          pagination={{ clickable: true }}
+          navigation
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper"
         >
-          <SwiperSlide>
-            <img className="book" src={values.img1} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img2} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img3} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img4} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img5} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img6} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img7} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img8} alt="cim" />
-          </SwiperSlide>{" "}
-          <SwiperSlide>
-            <img className="book" src={values.img9} alt="cim" />
-          </SwiperSlide>
+          {filteredBooks.slice(0, 9).map((src, index) => (
+            <SwiperSlide key={index}>{renderBook(src, index)}</SwiperSlide>
+          ))}
         </Swiper>
       </div>
 
       <div className="card-container">
-        <img src="images/alice.png" />
+        <img src="images/alice.png" alt="featured" />
         <div className="text-box">
           <h1>2023 year 50 most popular bestseller</h1>
           <p>
@@ -124,54 +106,7 @@ function Index() {
 
       <h1 className="latest">Latest</h1>
       <div className="book-container">
-        <div className="book">
-          <img src={values.img1} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img2} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img3} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img4} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img5} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img6} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img7} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img8} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img9} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img10} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img11} alt="cim" />
-        </div>
-        <div className="book">
-          <img src={values.img12} alt="cim" />
-        </div>{" "}
-        <div className="book">
-          <img src={values.img13} alt="cim" />
-        </div>{" "}
-        <div className="book">
-          <img src={values.img14} alt="cim" />
-        </div>{" "}
-        <div className="book">
-          <img src={values.img15} alt="cim" />
-        </div>{" "}
-        <div className="book">
-          <img src={values.img16} alt="cim" />
-        </div>
+        {filteredBooks.map((src, index) => renderBook(src, index))}
       </div>
     </>
   );

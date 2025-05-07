@@ -1,7 +1,6 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -9,10 +8,13 @@ import Button from "react-bootstrap/Button";
 import "./header.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
-function Header() {
+function Header({ setCategoryFilter, setSearchQuery, searchQuery }) {
   const [admin, setAdmin] = useState(false);
   const [auth, setAuth] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null); // Track active category
+  const location = useLocation(); // Get the current location (URL)
 
   useEffect(() => {
     axios
@@ -43,6 +45,12 @@ function Header() {
       });
   };
 
+  const handleCategorySelect = (category) => {
+    setActiveCategory(category);
+    setCategoryFilter(category);
+    setSearchQuery("");
+  };
+
   return (
     <>
       <Navbar
@@ -59,9 +67,19 @@ function Header() {
               {auth ? (
                 <>
                   {admin ? (
-                    <Nav.Link href="/adminpage">Book adding</Nav.Link>
+                    <Nav.Link
+                      href="/adminpage"
+                      active={location.pathname === "/adminpage"}
+                    >
+                      Book adding
+                    </Nav.Link>
                   ) : (
-                    <Nav.Link href="/userdatachange">Profile settings</Nav.Link>
+                    <Nav.Link
+                      href="/userdatachange"
+                      active={location.pathname === "/userdatachange"}
+                    >
+                      Profile settings
+                    </Nav.Link>
                   )}
                   <Button className="search-btn" onClick={handleLogout}>
                     Logout
@@ -69,8 +87,18 @@ function Header() {
                 </>
               ) : (
                 <>
-                  <Nav.Link href="/login">Login</Nav.Link>
-                  <Nav.Link href="/signup">Signup</Nav.Link>
+                  <Nav.Link
+                    href="/login"
+                    active={location.pathname === "/login"}
+                  >
+                    Login
+                  </Nav.Link>
+                  <Nav.Link
+                    href="/signup"
+                    active={location.pathname === "/signup"}
+                  >
+                    Signup
+                  </Nav.Link>
                 </>
               )}
             </Nav>
@@ -78,19 +106,11 @@ function Header() {
               <Form inline="true">
                 <Row>
                   <Col xs="auto">
-                    <Form.Control
-                      type="text"
-                      placeholder="Find a book"
-                      className="mr-sm-2"
-                    />
-                  </Col>
-                  <Col xs="auto">
-                    <Button className="search-btn" type="submit">
-                      Search
-                    </Button>
-                  </Col>
-                  <Col xs="auto">
-                    <Button className="cart-btn" variant="outline-primary">
+                    <Button
+                      className="cart-btn"
+                      href="/cart"
+                      active={location.pathname === "/cart"}
+                    >
                       <i className="bi bi-cart"></i>
                     </Button>
                   </Col>
@@ -101,19 +121,43 @@ function Header() {
         </Container>
       </Navbar>
 
-      <Nav fill className="bottom-nav" variant="tabs" defaultActiveKey="/index">
+      <Nav fill className="bottom-nav" variant="tabs">
         <Nav.Item>
-          <Nav.Link className="navlink" href="/index">
+          <Nav.Link
+            className="navlink"
+            href="#"
+            active={activeCategory === "Books"}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              handleCategorySelect("Books"); // Set filter to Books
+            }}
+          >
             Books
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="navlink" href="/e-books">
+          <Nav.Link
+            className="navlink"
+            href="#"
+            active={activeCategory === "E-books"}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              handleCategorySelect("E-books"); // Set filter to E-books
+            }}
+          >
             E-books
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link className="navlink" href="/audiobooks">
+          <Nav.Link
+            className="navlink"
+            href="#"
+            active={activeCategory === "Audiobooks"}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              handleCategorySelect("Audiobooks"); // Set filter to Audiobooks
+            }}
+          >
             Audiobooks
           </Nav.Link>
         </Nav.Item>

@@ -9,11 +9,18 @@
   color: #000 !important;
   font-size: 16px !important;
 }
-.search-btn {
-  background-color: #dab688 !important;
-  border: #dab688 !important;
-}
+
 .cart-btn {
-  color: #dab688 !important;
-  border-color: #dab688 !important;
+  background-color: #bd8e73 !important; /* sötétbézs / barna */
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.cart-btn:hover {
+  background-color: #e6aa78 !important; /* világosabb bézs hover */
+  color: #fff !important;
 }
