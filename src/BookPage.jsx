@@ -27,6 +27,20 @@ export default function BookPage() {
             .catch(err => console.log(err));
     },[])
 
+    const handleSubmit = () => {
+        axios.post("http://localhost:8081/addbooktokosar", {darab: darab, isbn: values[0]})
+        .then(res => {
+            if (res.data.status === "success") {
+                alert(res.data.message);
+                navigate("/kosar");
+            } else if (res.data.Status === "failed") {
+                alert(res.data.message);
+            } else {
+                alert(res.data.Error);
+            }
+        })
+        .catch(err => console.log(err));
+    }
 
     return (
         <Container>
@@ -48,10 +62,10 @@ export default function BookPage() {
                         { values[12] !== "" ? <div className="p-2">E-könyv formátum: {values[12]}</div> : null }
                         { values[13] !== 0 ? <div className="p-2">Hangoskönyv hossz: {values[13]} perc</div> : null }
                         <div>
-                            <form>
+                            <form action={handleSubmit}>
                                 <div>
                                     <label>Darab: </label>
-                                    <input type="number" defaultValue={darab} name="darab" min="0" max={values[7]} onChange={event => setDarab(event.target.value)}/>
+                                    <input type="number" defaultValue={darab} name="darab" min="1" max={values[7]} onChange={event => setDarab(event.target.value)}/>
                                 </div>
                                 <div>
                                     <Button type="submit">Kosárba teszem</Button>

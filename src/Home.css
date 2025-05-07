@@ -174,3 +174,31 @@ h3{
 .logoutbutton:hover {
     transform: scale(1.05);
 }
+
+.kosarimg {
+    cursor: auto;
+    width: 75px;
+    margin-right: 40px;
+}
+
+.kosarinfo {
+    margin: 0 auto;
+    text-align: center;
+    display: inline-block;
+    margin-left: -50px;
+}
+
+.kosaritem {
+    background-color: #efe8e0;
+    width: 75%;
+    margin: 25px auto;
+    padding: 20px;
+    border-radius: 3px;
+    p {
+        display: inline-block;
+    }
+}
+
+li {
+    list-style: none;
+}

@@ -6,9 +6,14 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "./index.css";
 import { Pagination, Autoplay, Navigation } from "swiper/modules";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 function Index() {
     const [values, setValues] = React.useState(Array(16).fill([]));
+    const [cheapest, setCheapest] = React.useState([]);
+    const [expensive, setExpensive] = React.useState([]);
 
     useEffect(() => {
         axios.post("http://localhost:8081/getbookimages", values)
@@ -16,6 +21,8 @@ function Index() {
                 if (res.data.status === "success") {
                     const filledValues = Array(16).fill([]).map((_, ind) => res.data.result[ind] || []);
                     setValues(filledValues);
+                    setCheapest(res.data.cheapest_ebook);
+                    setExpensive(res.data.expensive);
                 } else {
                     alert(res.data.message);
                 }
@@ -23,7 +30,7 @@ function Index() {
             .catch((err) => {
                 console.log(err);
             })
-    },[])
+    },[]);
 
     const navigate = useNavigate();
     axios.defaults.withCredentials = true;
@@ -100,6 +107,39 @@ function Index() {
                     </p>
                 </div>
             </div>
+
+            <Container>
+                <Row>
+                    <Col>
+                        <div>
+                            <h1>A legolcsóbb e-könyv</h1>
+                            <div>
+                                <img src={cheapest[2]} alt={cheapest[1]} style={{ width: "200px", marginRight: "30px" }} onClick={() => getBookPage([cheapest[0]])}/>
+                                <p style={{
+                                    display: "inline-block", width: "fit-content"
+                                }}>{cheapest[1]}<br/>{cheapest[3]} Ft<br/>E-könyv formátum: {cheapest[5]}<br/>Elérhető darab: {cheapest[4]}</p>
+                                <button style={{
+                                    display: "inline"
+                                }} onClick={() => getBookPage([cheapest[0]])}>Megnézem</button>
+                            </div>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div>
+                            <h1>A legdrágább hangoskönyv</h1>
+                            <div>
+                                <img src={expensive[2]} alt={expensive[1]} style={{ width: "200px", marginRight: "30px" }} onClick={() => getBookPage([expensive[0]])}/>
+                                <p style={{
+                                    display: "inline-block", width: "fit-content"
+                                }}>{expensive[1]}<br/>{expensive[3]} Ft<br/>Hossz: {expensive[5]} perc<br/>Elérhető darab: {expensive[4]}</p>
+                                <button style={{
+                                    display: "inline"
+                                }} onClick={() => getBookPage([expensive[0]])}>Megnézem</button>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Container>
 
             <h1 className="latest">Latest</h1>
             <div className="book-container">

@@ -17,6 +17,10 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import AdminPage from "./AdminPage.jsx";
 import BookPage from "./BookPage.jsx";
+import Kosar from "./Kosar.jsx";
+import Rendeles from "./Rendeles.jsx";
+import Statistics from "./Statistics.jsx";
+import Search from "./Search.jsx";
 
 function App() {
     const [auth, setAuth] = React.useState(false);
@@ -64,14 +68,21 @@ function App() {
                         <Navbar.Brand href="/">Bookstore</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
+                            <Nav.Link href="/search">Keresés</Nav.Link>
                             {
                                 auth ?
                                     <Nav className="me-auto">
                                         {
                                             admin ?
-                                                <Nav.Link href="/adminpage">Book adding</Nav.Link>
+                                                <>
+                                                    <Nav.Link href="/adminpage">Book adding</Nav.Link>
+                                                    <Nav.Link href="/statistics">Statisztikák</Nav.Link>
+                                                </>
                                                 :
-                                                <Nav.Link href="/userdatachange">Profile settings</Nav.Link>
+                                                <>
+                                                    <Nav.Link href="/userdatachange">Profile settings</Nav.Link>
+                                                    <Nav.Link href="/kosar">Kosár</Nav.Link>
+                                                </>
                                         }
                                         <Button className="search-btn" type="submit" onClick={handleDelete}>Logout</Button>
                                     </Nav>
@@ -94,6 +105,10 @@ function App() {
             <Route path="/userdatachange" element={<UserDataChange />}></Route>
             <Route path="/adminpage" element={<AdminPage />}></Route>
             <Route path="/bookpage" element={<BookPage />}></Route>
+            <Route path="/kosar" element={<Kosar />}></Route>
+            <Route path="/rendeles" element={<Rendeles />}></Route>
+            <Route path="/statistics" element={<Statistics />}></Route>
+            <Route path="/search" element={<Search />}></Route>
         </Routes>
       </BrowserRouter>
     </>
