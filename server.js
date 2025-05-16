@@ -74,10 +74,25 @@ app.get("/", verifyUser ,(req, res) => {
             //osszetett lekerdezes #4
             const legeladottabb_book = await connection.execute("SELECT kiadvany.isbn, cim, SUM(darab) FROM kiadvany, kosar_tartalma, kosar WHERE kiadvany.isbn = kosar_tartalma.isbn AND kosar_tartalma.id = kosar.id AND kosar.allapot = 1 GROUP BY kiadvany.isbn, kiadvany.cim ORDER BY SUM(darab) DESC");
 
+            //osszetett lekerdezes #5
+            const legeladottabb_mufaj = await connection.execute("SELECT mufaj.mufaj, SUM(kosar_tartalma.darab) FROM mufaj, kosar, kosar_tartalma WHERE mufaj.isbn = kosar_tartalma.isbn AND kosar_tartalma.id = kosar.id AND kosar.allapot = 1 GROUP BY mufaj.mufaj ORDER BY SUM(kosar_tartalma.darab) DESC");
+
+            //osszetett lekerdezes #6
+            const legnepszerubb_szerzo = await connection.execute("SELECT szerzo.nev, SUM(kosar_tartalma.darab) FROM szerzo, kosar, kosar_tartalma WHERE szerzo.isbn = kosar_tartalma.isbn AND kosar_tartalma.id = kosar.id AND kosar.allapot = 1 GROUP BY szerzo.nev ORDER BY SUM(kosar_tartalma.darab) DESC");
+
+            //osszetett lekerdezes #7
+            const nulla_eladas_szerzok = await connection.execute("SELECT DISTINCT szerzo.nev FROM szerzo, kiadvany where szerzo.isbn = kiadvany.isbn AND kiadvany.isbn NOT IN (SELECT DISTINCT ISBN FROM kosar_tartalma)");
+
+            //osszetett lekerdezes #8
+            const nulla_eladas_mufajok = await connection.execute("SELECT DISTINCT mufaj.mufaj FROM mufaj, kiadvany where mufaj.isbn = kiadvany.isbn AND kiadvany.isbn NOT IN (SELECT DISTINCT ISBN FROM kosar_tartalma)");
+
+            //osszetett lekerdezesek #9
+            const koltesek = await connection.execute("SELECT email, SUM(kiadvany.ar) FROM vasarlo, kosar, kosar_tartalma, kiadvany WHERE kiadvany.isbn = kosar_tartalma.isbn AND kosar.id = kosar_tartalma.id AND kosar.vasarlo = vasarlo.email GROUP BY vasarlo.email ORDER BY SUM(kiadvany.ar) DESC");
+
             await connection.close();
 
             if (result.rows.length === 1) {
-                return res.json({Status: "Success", email: req.email, admin: true, legaktivabb: legaktivabb_user.rows[0], legeladottabb: legeladottabb_book.rows[0]});
+                return res.json({Status: "Success", email: req.email, admin: true, legaktivabb: legaktivabb_user.rows[0], legeladottabb: legeladottabb_book.rows[0], mufaj: legeladottabb_mufaj.rows[0], szerzo: legnepszerubb_szerzo.rows[0], nulla_eladas_szerzok: nulla_eladas_szerzok.rows, nulla_eladas_mufajok: nulla_eladas_mufajok.rows, koltesek: koltesek.rows});
             } else {
                 return res.json({Status: "Success", email: req.email, admin: false});
             }
@@ -285,7 +300,7 @@ app.post("/addBooks", (req, res) => {
 
             let connection2 = await oracledb.getConnection();
 
-            await connection2.execute("INSERT INTO KIADVANY VALUES (:isbn,:cim,:kiado,:kiadasEve,:nyelv,:ar,:ismerteto,:elerhetoDb,:adminEmail,:kep)",{isbn:req.body.isbn,cim:req.body.cim,kiado:req.body.kiado,kiadasEve:req.body.kiadasEve,nyelv:req.body.nyelv,ar:req.body.ar,ismerteto:req.body.ismerteto,elerhetoDb:req.body.elerhetoDb,adminEmail:userEmail,kep:kepurl});
+            await connection2.execute("BEGIN UJKIADVANY(:isbn,:cim,:kiado,:kiadasEve,:nyelv,:ar,:ismerteto,:elerhetoDb,:adminEmail,:kep); END;",{isbn:req.body.isbn,cim:req.body.cim,kiado:req.body.kiado,kiadasEve:req.body.kiadasEve,nyelv:req.body.nyelv,ar:req.body.ar,ismerteto:req.body.ismerteto,elerhetoDb:req.body.elerhetoDb,adminEmail:userEmail,kep:kepurl});
 
             if (req.body.formatum.length > 0) {
                 await connection2.execute("INSERT INTO E_KONYV VALUES (:isbn,:formatum)",{isbn:req.body.isbn,formatum:req.body.formatum});
@@ -702,14 +717,16 @@ app.post("/addbooktokosar",verifyUser,(req,res)=>{
             const bookcheck = await connection.execute("SELECT * FROM KOSAR_TARTALMA WHERE ID = :id AND ISBN = :isbn",{id:id,isbn:req.body.isbn});
             if (bookcheck.rows.length === 0) {
                 await connection.execute("INSERT INTO KOSAR_TARTALMA VALUES (:id,:isbn,:darab)",{id:id,isbn:req.body.isbn,darab:req.body.darab});
+
+                //trigger itt fog futni
             } else {
                 const darabok = await connection.execute("SELECT DARAB FROM KOSAR_TARTALMA WHERE ID = :id AND ISBN = :isbn",{id:id,isbn:req.body.isbn});
                 const ujdarab = parseInt(darabok.rows[0][0])+parseInt(req.body.darab);
                 await connection.execute("UPDATE KOSAR_TARTALMA SET DARAB = :darab WHERE ID = :id AND ISBN = :isbn",{id:id,isbn:req.body.isbn,darab:ujdarab});
-            }
 
-            const elerhetodb = await connection.execute("SELECT ELERHETO_DB FROM KIADVANY WHERE ISBN = :isbn",{isbn:req.body.isbn});
-            await connection.execute("UPDATE KIADVANY SET ELERHETO_DB = :db WHERE ISBN = :isbn",{db:parseInt(elerhetodb.rows[0][0])-req.body.darab,isbn:req.body.isbn});
+                const elerhetodb = await connection.execute("SELECT ELERHETO_DB FROM KIADVANY WHERE ISBN = :isbn",{isbn:req.body.isbn});
+                await connection.execute("UPDATE KIADVANY SET ELERHETO_DB = :db WHERE ISBN = :isbn",{db:parseInt(elerhetodb.rows[0][0])-req.body.darab,isbn:req.body.isbn});
+            }
 
             await connection.commit();
             await connection.close();
