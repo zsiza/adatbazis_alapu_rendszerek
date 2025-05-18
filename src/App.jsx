@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/login/Login.jsx";
 import Signup from "./components/signup/Signup.jsx";
-import Header from "./components/header/header.jsx";
 import Index from "./components/index/index.jsx";
 import UserDataChange from "./UserDataChange.jsx";
 import React, { useState, useEffect } from "react";
@@ -25,11 +24,10 @@ function App() {
   const [categoryFilter, setCategoryFilter] = useState("Books");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Simulated authentication and role state
-  const [auth, setAuth] = useState(false); // or true, based on your logic
-  const [admin, setAdmin] = useState(false); // set true if user is an admin
 
-  // Simulated logout handler
+  const [auth, setAuth] = useState(false); //ezt kellett beleirnom mert nelkule nem mukodott volna, meg ami alatta van
+  const [admin, setAdmin] = useState(false);
+
   const handleDelete = () => {
     setAuth(false);
     setAdmin(false);
@@ -38,6 +36,7 @@ function App() {
 
   return (
     <>
+      <Navbar collapseOnSelect expand="lg" sticky="top" className="custom-navbar">
         <Container>
           <Navbar.Brand href="/">Bookstore</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -75,13 +74,14 @@ function App() {
       </Navbar>
 
       <BrowserRouter>
-        <Header
-          setCategoryFilter={setCategoryFilter}
-          setSearchQuery={setSearchQuery}
-          searchQuery={searchQuery}
-        />
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={
+            <Index
+              categoryFilter={categoryFilter}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/userdatachange" element={<UserDataChange />} />
