@@ -202,3 +202,19 @@ h3{
 li {
     list-style: none;
 }
+
+.bookbutton {
+    background-color: #dab688;
+    border: none;
+    color: lightyellow;
+    border-radius: 5px;
+    padding: 10px;
+    margin-left: 20px;
+    margin-top: 10px;
+    box-shadow: 2px 2px 2px #efe8e0;
+    transition: 200ms ease-in-out;
+}
+
+.bookbutton:hover {
+    transform: scale(1.05);
+}

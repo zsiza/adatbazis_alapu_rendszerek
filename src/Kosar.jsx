@@ -89,7 +89,7 @@ export default function Kosar() {
                                             setDelIsbn(value[0]);
                                         }
                                     }} />
-                                    <button type="submit">Törlés</button>
+                                    <button className="bookbutton" type="submit">Törlés</button>
                                 </form>
                             </div>
                         </li>
@@ -99,7 +99,7 @@ export default function Kosar() {
                     width: "fit-content",
                     margin: "20px auto 30px auto",
                 }}>A szállítási cím megegyezik a felhasználói adatoknál megadott címmel, ha a szállítási címen változtatni szeretne, akkor azokon az adatokon változtasson!</p>
-                <button onClick={handleOrder} style={{
+                <button className="bookbutton" onClick={handleOrder} style={{
                     display: "block",
                     margin: "auto",
                     padding: "20px",

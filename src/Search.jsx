@@ -95,7 +95,7 @@ export default function Search() {
                             <img src={book[5]} alt={book[1]}  style={{ width: "150px" }} onClick={() => getBookPage([book[0]])} />
                         </Col>
                         <Col style={{paddingTop: "40px"}}>
-                            {book[1]}<br/>{book[3]} Ft<br/>{book[4]} elérhető darab<br/>{book[6]}<br/>{book[7]}<br/><button onClick={() => getBookPage([book[0]])}>Megnézem</button>
+                            {book[1]}<br/>{book[3]} Ft<br/>{book[4]} elérhető darab<br/>{book[6]}<br/>{book[7]}<br/><button className="bookbutton" onClick={() => getBookPage([book[0]])}>Megnézem</button>
                         </Col>
                     </Row>
                 ))}

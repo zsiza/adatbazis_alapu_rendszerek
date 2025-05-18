@@ -118,7 +118,7 @@ function Index() {
                                 <p style={{
                                     display: "inline-block", width: "fit-content"
                                 }}>{cheapest[1]}<br/>{cheapest[3]} Ft<br/>E-könyv formátum: {cheapest[5]}<br/>Elérhető darab: {cheapest[4]}</p>
-                                <button style={{
+                                <button className="bookbutton" style={{
                                     display: "inline"
                                 }} onClick={() => getBookPage([cheapest[0]])}>Megnézem</button>
                             </div>
@@ -132,7 +132,7 @@ function Index() {
                                 <p style={{
                                     display: "inline-block", width: "fit-content"
                                 }}>{expensive[1]}<br/>{expensive[3]} Ft<br/>Hossz: {expensive[5]} perc<br/>Elérhető darab: {expensive[4]}</p>
-                                <button style={{
+                                <button className="bookbutton" style={{
                                     display: "inline"
                                 }} onClick={() => getBookPage([expensive[0]])}>Megnézem</button>
                             </div>

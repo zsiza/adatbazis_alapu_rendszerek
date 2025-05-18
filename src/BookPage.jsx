@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Button from "react-bootstrap/Button";
+import './BookPage.css';
 
 export default function BookPage() {
     const [values, setValues] = useState([]);
@@ -45,7 +46,9 @@ export default function BookPage() {
     return (
         <Container>
             <Row>
-                <Col>{values[1]}</Col>
+                <Col style={{
+                    textAlign: "left", fontSize: "30px", padding: "20px", fontWeight: "bold", letterSpacing: "2px"
+                }}>{values[1]}</Col>
             </Row>
             <Row>
                 <Col><img src={values[9]} alt={values[1]}/></Col>
@@ -68,13 +71,14 @@ export default function BookPage() {
                                     <input type="number" defaultValue={darab} name="darab" min="1" max={values[7]} onChange={event => setDarab(event.target.value)}/>
                                 </div>
                                 <div>
-                                    <Button type="submit">Kosárba teszem</Button>
+                                    <button className="bookbutton" type="submit">Kosárba teszem</button>
                                 </div>
                             </form>
                         </div>
                     </Stack>
                 </Col>
             </Row>
+            <hr style={{margin: "40px"}}/>
             <Row>
                 <Col>{values[6]}</Col>
             </Row>
