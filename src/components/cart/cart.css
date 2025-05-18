@@ -1,0 +1,31 @@
+.cart-container {
+  background-color: #f3e2c7; /* light beige */
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 3rem auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cart-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #5e3218;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.cart-content {
+  background-color: #fffaf3;
+  border: 2px dashed #dab688;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty-message {
+  color: #8a5b35;
+  font-size: 1.2rem;
+  font-weight: bold;
+}

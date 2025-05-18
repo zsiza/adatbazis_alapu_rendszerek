@@ -1,11 +1,10 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Login from "./Login.jsx";
-import Signup from "./Signup.jsx";
-import Home from "./Home.jsx";
-import "./Home.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/login/Login.jsx";
+import Signup from "./components/signup/Signup.jsx";
 import Header from "./components/header/header.jsx";
+import Index from "./components/index/index.jsx";
 import UserDataChange from "./UserDataChange.jsx";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
@@ -23,92 +22,75 @@ import Statistics from "./Statistics.jsx";
 import Search from "./Search.jsx";
 
 function App() {
-    const [auth, setAuth] = React.useState(false);
-    const [admin, setAdmin] = React.useState(false);
-
-    const handleDelete = () => {
-        axios.get("http://localhost:8081/logout")
-            .then((res) => {
-                if (res.data.Status === "Success") {
-                    location.reload(true);
-                }
-            }).catch((err) => {
-            console.log(err);
-        })
-    }
-
-    useEffect(() => {
-        axios.get("http://localhost:8081")
-            .then((res) => {
-                console.log(res);
-                if (res.data.Status === "Success") {
-                    setAuth(true);
-                    setAdmin(res.data.admin);
-                    console.log(res.data.email);
-                } else {
-                    setAuth(false);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }, [])
+  const [categoryFilter, setCategoryFilter] = useState("Books");
+  const [searchQuery, setSearchQuery] = useState(""); // Add searchQuery state
 
   return (
     <>
-        {
-            <>
-                <Navbar
-                    collapseOnSelect
-                    expand="lg"
-                    sticky="top"
-                    className="custom-navbar"
-                >
-                    <Container>
-                        <Navbar.Brand href="/">Bookstore</Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav.Link href="/search">Keresés</Nav.Link>
-                            {
-                                auth ?
-                                    <Nav className="me-auto">
-                                        {
-                                            admin ?
-                                                <>
-                                                    <Nav.Link href="/adminpage">Book adding</Nav.Link>
-                                                    <Nav.Link href="/statistics">Statisztikák</Nav.Link>
-                                                </>
-                                                :
-                                                <>
-                                                    <Nav.Link href="/userdatachange">Profile settings</Nav.Link>
-                                                    <Nav.Link href="/kosar">Kosár</Nav.Link>
-                                                </>
-                                        }
-                                        <Button className="search-btn" type="submit" onClick={handleDelete}>Logout</Button>
-                                    </Nav>
-                                    :
-                                    <Nav className="me-auto">
-                                        <Nav.Link href="/login">Login</Nav.Link>
-                                        <Nav.Link href="/signup">Signup</Nav.Link>
-                                    </Nav>
-                            }
-                        </Navbar.Collapse>
-                    </Container>
-                </Navbar>
-            </>
-        }
+      {
+        <>
+          <Navbar
+            collapseOnSelect
+            expand="lg"
+            sticky="top"
+            className="custom-navbar"
+          >
+            <Container>
+              <Navbar.Brand href="/">Bookstore</Navbar.Brand>
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse id="basic-navbar-nav">
+                <Nav.Link href="/search">Keresés</Nav.Link>
+                {auth ? (
+                  <Nav className="me-auto">
+                    {admin ? (
+                      <>
+                        <Nav.Link href="/adminpage">Book adding</Nav.Link>
+                        <Nav.Link href="/statistics">Statisztikák</Nav.Link>
+                      </>
+                    ) : (
+                      <>
+                        <Nav.Link href="/userdatachange">
+                          Profile settings
+                        </Nav.Link>
+                        <Nav.Link href="/kosar">Kosár</Nav.Link>
+                      </>
+                    )}
+                    <Button
+                      className="search-btn"
+                      type="submit"
+                      onClick={handleDelete}
+                    >
+                      Logout
+                    </Button>
+                  </Nav>
+                ) : (
+                  <Nav className="me-auto">
+                    <Nav.Link href="/login">Login</Nav.Link>
+                    <Nav.Link href="/signup">Signup</Nav.Link>
+                  </Nav>
+                )}
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+        </>
+      }
       <BrowserRouter>
+        <Header
+          setCategoryFilter={setCategoryFilter}
+          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
+        />
         <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/signup" element={<Signup />}></Route>
-            <Route path="/userdatachange" element={<UserDataChange />}></Route>
-            <Route path="/adminpage" element={<AdminPage />}></Route>
-            <Route path="/bookpage" element={<BookPage />}></Route>
-            <Route path="/kosar" element={<Kosar />}></Route>
-            <Route path="/rendeles" element={<Rendeles />}></Route>
-            <Route path="/statistics" element={<Statistics />}></Route>
-            <Route path="/search" element={<Search />}></Route>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/userdatachange" element={<UserDataChange />}></Route>
+          <Route path="/adminpage" element={<AdminPage />}></Route>
+          <Route path="/bookpage" element={<BookPage />}></Route>
+          <Route path="/kosar" element={<Kosar />}></Route>
+          <Route path="/rendeles" element={<Rendeles />}></Route>
+          <Route path="/statistics" element={<Statistics />}></Route>
+          <Route path="/search" element={<Search />}></Route>
         </Routes>
       </BrowserRouter>
     </>

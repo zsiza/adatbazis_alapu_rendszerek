@@ -1,0 +1,62 @@
+body {
+  background-color: #f9f3e8; /* soft beige background */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loginsignupform {
+  background-color: #f3e2c7; /* light beige form */
+  padding: 2rem;
+  margin: 4rem auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.loginsignupform h2 {
+  text-align: center;
+  color: #5e3218;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.loginsignupform div {
+  margin-bottom: 1.2rem;
+}
+
+.loginsignupform label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #5e3218;
+  font-weight: bold;
+}
+
+.loginsignupform input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d3b58f;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fffdf9;
+  color: #5e3218;
+}
+
+.loginsignupform input::placeholder {
+  color: #b79a7b;
+}
+
+.loginsignupform button {
+  width: 100%;
+  padding: 12px;
+  background-color: #5e3218;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.loginsignupform button:hover {
+  background-color: #e6aa78;
+  cursor: pointer;
+}

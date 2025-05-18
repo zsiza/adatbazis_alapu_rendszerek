@@ -1,0 +1,37 @@
+.bookpage-card {
+  background-color: #dab688; /* bézs */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.bookpage-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.bookpage-divider {
+  border-top: 2px solid #361c06;
+  margin: 1.5rem 0;
+}
+
+form .bookpage-btn {
+  background-color: #5e3218;
+  color: #fff;
+  border-color: transparent;
+  transition: background-color 0.3s ease;
+}
+
+form .bookpage-btn:hover {
+  background-color: #e6aa78;
+  border-color: transparent;
+}
+.darab-input {
+  width: 80px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  font-size: 1rem;
+}
