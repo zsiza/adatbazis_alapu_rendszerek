@@ -4,7 +4,7 @@ import Signup from "./components/signup/Signup.jsx";
 import Header from "./components/header/header.jsx";
 import Index from "./components/index/index.jsx";
 import UserDataChange from "./UserDataChange.jsx";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
@@ -14,7 +14,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import AdminPage from "./AdminPage.jsx";
+import AdminPage from "./components/admin/AdminPage.jsx";
 import BookPage from "./BookPage.jsx";
 import Kosar from "./Kosar.jsx";
 import Rendeles from "./Rendeles.jsx";
@@ -23,57 +23,57 @@ import Search from "./Search.jsx";
 
 function App() {
   const [categoryFilter, setCategoryFilter] = useState("Books");
-  const [searchQuery, setSearchQuery] = useState(""); // Add searchQuery state
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Simulated authentication and role state
+  const [auth, setAuth] = useState(false); // or true, based on your logic
+  const [admin, setAdmin] = useState(false); // set true if user is an admin
+
+  // Simulated logout handler
+  const handleDelete = () => {
+    setAuth(false);
+    setAdmin(false);
+    console.log("User logged out");
+  };
 
   return (
     <>
-      {
-        <>
-          <Navbar
-            collapseOnSelect
-            expand="lg"
-            sticky="top"
-            className="custom-navbar"
-          >
-            <Container>
-              <Navbar.Brand href="/">Bookstore</Navbar.Brand>
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
-              <Navbar.Collapse id="basic-navbar-nav">
-                <Nav.Link href="/search">Keresés</Nav.Link>
-                {auth ? (
-                  <Nav className="me-auto">
-                    {admin ? (
-                      <>
-                        <Nav.Link href="/adminpage">Book adding</Nav.Link>
-                        <Nav.Link href="/statistics">Statisztikák</Nav.Link>
-                      </>
-                    ) : (
-                      <>
-                        <Nav.Link href="/userdatachange">
-                          Profile settings
-                        </Nav.Link>
-                        <Nav.Link href="/kosar">Kosár</Nav.Link>
-                      </>
-                    )}
-                    <Button
-                      className="search-btn"
-                      type="submit"
-                      onClick={handleDelete}
-                    >
-                      Logout
-                    </Button>
-                  </Nav>
+        <Container>
+          <Navbar.Brand href="/">Bookstore</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav.Link href="/search">Keresés</Nav.Link>
+            {auth ? (
+              <Nav className="me-auto">
+                {admin ? (
+                  <>
+                    <Nav.Link href="/adminpage">Book adding</Nav.Link>
+                    <Nav.Link href="/statistics">Statisztikák</Nav.Link>
+                  </>
                 ) : (
-                  <Nav className="me-auto">
-                    <Nav.Link href="/login">Login</Nav.Link>
-                    <Nav.Link href="/signup">Signup</Nav.Link>
-                  </Nav>
+                  <>
+                    <Nav.Link href="/userdatachange">Profile settings</Nav.Link>
+                    <Nav.Link href="/kosar">Kosár</Nav.Link>
+                  </>
                 )}
-              </Navbar.Collapse>
-            </Container>
-          </Navbar>
-        </>
-      }
+                <Button
+                  className="search-btn"
+                  type="submit"
+                  onClick={handleDelete}
+                >
+                  Logout
+                </Button>
+              </Nav>
+            ) : (
+              <Nav className="me-auto">
+                <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link href="/signup">Signup</Nav.Link>
+              </Nav>
+            )}
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
       <BrowserRouter>
         <Header
           setCategoryFilter={setCategoryFilter}
@@ -81,20 +81,22 @@ function App() {
           searchQuery={searchQuery}
         />
         <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<Signup />}></Route>
-          <Route path="/userdatachange" element={<UserDataChange />}></Route>
-          <Route path="/adminpage" element={<AdminPage />}></Route>
-          <Route path="/bookpage" element={<BookPage />}></Route>
-          <Route path="/kosar" element={<Kosar />}></Route>
-          <Route path="/rendeles" element={<Rendeles />}></Route>
-          <Route path="/statistics" element={<Statistics />}></Route>
-          <Route path="/search" element={<Search />}></Route>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/userdatachange" element={<UserDataChange />} />
+          <Route path="/adminpage" element={<AdminPage />} />
+          <Route path="/bookpage" element={<BookPage />} />
+          <Route path="/kosar" element={<Kosar />} />
+          <Route path="/rendeles" element={<Rendeles />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/search" element={<Search />} />
         </Routes>
       </BrowserRouter>
     </>
   );
 }
 
+
 export default App;
+
