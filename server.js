@@ -81,10 +81,10 @@ app.get("/", verifyUser ,(req, res) => {
             const legnepszerubb_szerzo = await connection.execute("SELECT szerzo.nev, SUM(kosar_tartalma.darab) FROM szerzo, kosar, kosar_tartalma WHERE szerzo.isbn = kosar_tartalma.isbn AND kosar_tartalma.id = kosar.id AND kosar.allapot = 1 GROUP BY szerzo.nev ORDER BY SUM(kosar_tartalma.darab) DESC");
 
             //osszetett lekerdezes #7
-            const nulla_eladas_szerzok = await connection.execute("SELECT DISTINCT szerzo.nev FROM szerzo, kiadvany where szerzo.isbn = kiadvany.isbn AND kiadvany.isbn NOT IN (SELECT DISTINCT ISBN FROM kosar_tartalma)");
+            const nulla_eladas_szerzok = await connection.execute("SELECT DISTINCT szerzo.nev FROM szerzo WHERE szerzo.NEV NOT IN (SELECT DISTINCT NEV FROM KIADVANY, SZERZO, kosar_tartalma WHERE KIADVANY.ISBN = KOSAR_TARTALMA.ISBN AND SZERZO.ISBN = KIADVANY.ISBN)");
 
             //osszetett lekerdezes #8
-            const nulla_eladas_mufajok = await connection.execute("SELECT DISTINCT mufaj.mufaj FROM mufaj, kiadvany where mufaj.isbn = kiadvany.isbn AND kiadvany.isbn NOT IN (SELECT DISTINCT ISBN FROM kosar_tartalma)");
+            const nulla_eladas_mufajok = await connection.execute("SELECT DISTINCT mufaj.mufaj FROM mufaj WHERE mufaj.mufaj NOT IN (SELECT DISTINCT MUFAJ.MUFAJ FROM KIADVANY, KOSAR_TARTALMA, MUFAJ WHERE KIADVANY.ISBN = KOSAR_TARTALMA.ISBN AND MUFAJ.ISBN = KIADVANY.ISBN)");
 
             //osszetett lekerdezesek #9
             const koltesek = await connection.execute("SELECT email, SUM(kiadvany.ar) FROM vasarlo, kosar, kosar_tartalma, kiadvany WHERE kiadvany.isbn = kosar_tartalma.isbn AND kosar.id = kosar_tartalma.id AND kosar.vasarlo = vasarlo.email GROUP BY vasarlo.email ORDER BY SUM(kiadvany.ar) DESC");
@@ -896,9 +896,11 @@ app.post("/getallbooks",(req,res)=>{
                 row[9] = m_hossz;
             }
 
+            const mufajok = await connection.execute("SELECT DISTINCT mufaj FROM mufaj");
+
             await connection.close();
 
-            return res.json({status: "success", result: result.rows});
+            return res.json({status: "success", result: result.rows, mufajok: mufajok.rows});
 
         } catch (err) {
             console.log(err);
